@@ -16,7 +16,7 @@ COPY gfn-autostart.desktop /etc/xdg/autostart/gfn-autostart.desktop
 COPY tunnel-autostart.desktop /etc/xdg/autostart/tunnel-autostart.desktop
 RUN chmod 644 /etc/xdg/autostart/*.desktop
 
-ENV SELKIES_ENABLE_HTTPS=false
-ENV PASSWD=changeme
+ENV SELKIES_ENABLE_HTTPS=true
+ENV PASSWD=password
 
 EXPOSE 8080
