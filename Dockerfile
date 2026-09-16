@@ -1,26 +1,22 @@
-FROM ghcr.io/selkies-project/selkies-gstreamer:latest-cuda
+# Start from the current Selkies desktop image (CPU-only, no CUDA needed).
+# NVIDIA/AMD/Intel GPU passthrough is optional and handled at `docker run` time.
+FROM ghcr.io/selkies-project/selkies/desktop:main-ubuntu26.04
 
 USER root
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Chrome repo dependencies + a window manager
-RUN apt-get update && apt-get install -y \
-    wget gnupg ca-certificates fluxbox \
-    && rm -rf /var/lib/apt/lists/*
+# (Optional) install anything extra your session needs. Chrome is already here.
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#       <extra packages> \
+#     && rm -rf /var/lib/apt/lists/*
 
-# Google Chrome
-RUN wget -qO - https://dl.google.com/linux/linux_signing_key.pub \
-      | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" \
-      > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update && apt-get install -y google-chrome-stable \
-    && rm -rf /var/lib/apt/lists/*
+# Autostart entry that opens GeForce NOW in Chrome as soon as the desktop is up.
+COPY gfn-autostart.desktop /etc/xdg/autostart/gfn-autostart.desktop
+RUN chmod 644 /etc/xdg/autostart/gfn-autostart.desktop
 
-# Our startup script (window manager + Chrome)
-COPY start-app.sh /start-app.sh
-RUN chmod +x /start-app.sh
-
-# Tell Selkies to launch our script inside the streamed display
-ENV STARTUPCMD=/start-app.sh
+# Selkies serves on 8080; go plain-HTTP so Cloudflare terminates TLS.
+ENV SELKIES_ENABLE_HTTPS=false
+ENV SELKIES_PORT=8080
+ENV PASSWD=changeme
 
 EXPOSE 8080
