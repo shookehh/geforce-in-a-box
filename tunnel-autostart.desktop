@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
 Name=Cloudflare Tunnel
-Exec=/bin/sh -c '/usr/local/bin/cloudflared tunnel --no-autoupdate --url http://localhost:8080 >/tmp/cloudflared.log 2>&1'
+Exec=/bin/sh -c '/usr/local/bin/cloudflared tunnel --no-autoupdate --url https://localhost:8080 --no-tls-validate >/tmp/cloudflared.log 2>&1'
 Terminal=false
 X-GNOME-Autostart-enabled=true
